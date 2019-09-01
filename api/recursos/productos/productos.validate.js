@@ -6,11 +6,31 @@ const blueprintProducto = Joi.object().keys({
   moneda: Joi.string().max(3).required(),
 });
 
-module.exports = (req, res, next) => {
+const blueprintSearch = Joi.object().keys({
+	titulo: Joi.string(),
+});
+
+function validateProduct(req, res, next) {
   const joiResult = Joi.validate(req.body, blueprintProducto);
+  if (joiResult.error) { 
+    res.status(400).send(`Has tenido un error en: ${joiResult.error}`);
+    return;
+  }
+  next();
+}
+
+function validateSearch(req, res, next) {
+	const joiResult = Joi.validate(req.query, blueprintSearch);
   if (joiResult.error) { // TODO: Mejorar el mensaje de error.
     res.status(400).send(`Has tenido un error en: ${joiResult.error}`);
     return;
   }
   next();
 }
+
+
+module.exports = {
+	validateProduct,
+	validateSearch,
+}
+

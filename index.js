@@ -8,6 +8,8 @@ const logger = require('./api/utils/logger');
 const productRouter = require('./api/recursos/productos/productos.routes');
 const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes');
 
+const productoController = require('./api/recursos/productos/productos.controller');
+
 const authJWT = require('./api/libs/auth');
 const errorHandler = require('./api/libs/errorHandler');
 const app = express();
@@ -33,6 +35,7 @@ app.use(passport.initialize());
 app.use('/usuarios', usuariosRouter);
 app.use('/productos', productRouter);
 
+
 app.use(errorHandler.procesarErroresDeDB);
 app.use(errorHandler.catchResolver);
 
@@ -44,13 +47,36 @@ app.get('/',(request, response) => {
   logger.error('Se hizo peticion al /');
   response.send('Hello World');
 });
-// Nayruth pide 3 pizzas :D*
+
+
+app.get('/search', (req, res) => {
+  const titulo = req.query.titulo;
+  console.log(titulo);  
+  const pageNo = parseInt(req.query.pageNo);
+  const size = parseInt(req.query.size);
+  const query = {};
+  if( pageNo < 0 || pageNo === 0) {
+    response = {
+    "error": true, 
+    "message": "invalide page number, should start with 1",
+    };
+    return res.json(response);
+  } 
+  query.skip = size * (pageNo - 1);
+  query.limit = size;
+  return productoController.buscarProducto(titulo,query)
+    .then(products => {
+      console.log('productos', products);
+      res.json(products);
+    })
+});
+
 app.listen(8080, () => {
   console.log('Init server');
 });
 
-
 /*
+
 passport.use(new BasicStrategy((username, password, done) => {
   if (username.valueOf() === 'luis' && password.valueOf() === 'krowdy123') {
     done(null, true);

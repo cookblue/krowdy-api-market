@@ -1,23 +1,14 @@
 const express = require('express');
 const uuidv4 = require('uuid/v4');
-
 const tokenValidate = require('../../libs/tokenValidate');
-const validateProducto = require('./productos.validate');
-
+const validateProducto = require('./productos.validate').validateProduct;
 const productoController = require('./productos.controller');
-
 const ProductoNoExiste = require('./productos.error').ProductoNoExiste;
-
 const procesarError = require('../../libs/errorHandler').procesarError;
-
 const productos = require('../../../db').productos;
-
 const passport = require('passport')
 const jwtAuthenticate = passport.authenticate('jwt', { session: false });
-
-
 const productsRoutes = express.Router();
-
 const logger = require('../../utils/logger');
 
 // /productos
@@ -43,8 +34,9 @@ productsRoutes.post('/', [jwtAuthenticate, validateProducto], (req, res) => {
     logger.error('Algo ocurrio en la db.')
   })
 });
-
+//se pone dos puntos /: ya que id se recibe como parametro
 productsRoutes.get('/:id', procesarError((req, res) => {
+  console.log('ERROR AQUI')
   const id = req.params.id;
   return productoController.obtenerProducto(id)
     .then(producto => {
@@ -54,8 +46,8 @@ productsRoutes.get('/:id', procesarError((req, res) => {
     })
   logger.info(`Se obtuvo el producto con id ${producto.id}`);
   res.json(producto);
-
 }));
+
 
 productsRoutes.put('/:id', validateProducto, async (req, res) => {
   const id = req.params.id;

@@ -16,6 +16,7 @@ usuariosRoutes.get('/', async (req, res) => {
   res.json(usuarios);
 });
 
+//endpoint para crear usuario
 usuariosRoutes.post('/', validateUsuario, async (req, res) => {
   bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
     if (err) {
