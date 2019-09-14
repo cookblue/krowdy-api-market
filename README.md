@@ -16,6 +16,10 @@ node index.js ó nodemon index.js
 - Passport
 - Hapi 
 
+## Postman Collection:
+
+- https://www.getpostman.com/collections/8484e93e554840db77f3
+
 ## Documentacion
 
 ### Primera clase:
