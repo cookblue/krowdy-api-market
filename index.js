@@ -12,6 +12,8 @@ const authJWT = require('./api/libs/auth');
 const errorHandler = require('./api/libs/errorHandler');
 const app = express();
 
+const jwtAuthenticate = passport.authenticate('jwt', { session: false });
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/training', { useNewUrlParser: true });
 mongoose.connection.on('error', (error) => {
@@ -40,10 +42,11 @@ passport.use(authJWT);
 
 
 // passport.authenticate('jwt', { session: false });
-app.get('/',(request, response) => {
-  logger.error('Se hizo peticion al /');
-  response.send('Hello World');
+app.post('/whoami', jwtAuthenticate, (req, res) => {
+  logger.info('Pedimos el usuario whoami');
+  res.json({ username: req.user.username });
 });
+
 // Nayruth pide 3 pizzas :D*
 app.listen(8080, () => {
   console.log('Init server');

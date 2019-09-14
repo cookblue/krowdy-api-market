@@ -48,7 +48,7 @@ usuariosRoutes.post('/login', validateUsuario, async (req, res) => {
     
     if (coincide) { 
       const token = jwt.sign({id: usuario['_id']}, 'secreto', { expiresIn: 86400 });
-      res.status(200).send({token});
+      res.status(200).send({token, usuario: usuario.username });
     } else {
       res.status(401).send(`Verifica tu password.`);
     }
