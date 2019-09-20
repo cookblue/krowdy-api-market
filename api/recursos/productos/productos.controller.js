@@ -5,11 +5,6 @@ function crearProducto(producto) {
 }
 
 function obtenerProductos() {
-  // return new Promise((resolve, rejected) => {
-  //   setTimeout(() => {
-  //     rejected(new Error);
-  //   }, 1000);
-  // });
   return Producto.find({});
 }
 
