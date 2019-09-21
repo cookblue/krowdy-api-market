@@ -10,6 +10,8 @@ const validateUsuario = require('./usuarios.validate');
 const usuarios = require('../../../db').usuarios;
 const usuariosRoutes = express.Router();
 
+const tokenValidate = require('../../libs/tokenValidate');
+
 
 usuariosRoutes.get('/', async (req, res) => {
   const usuarios = await usuarioController.obtenerUsuarios();
@@ -32,6 +34,14 @@ usuariosRoutes.post('/', validateUsuario, async (req, res) => {
 
 });
 
+
+usuariosRoutes.put('/', tokenValidate, async (req, res) => {
+  console.log(req.body)
+  const usuario = await usuarioController.actualizarUsuario(req.user.username, req.body.username);
+  res.json(usuario);
+});
+
+
 usuariosRoutes.post('/login', validateUsuario, async (req, res) => {
   const usuario = await usuarioController.obtenerUsuario(req.body.username)
   
@@ -49,11 +59,16 @@ usuariosRoutes.post('/login', validateUsuario, async (req, res) => {
     
     if (coincide) { 
       const token = jwt.sign({id: usuario['_id']}, 'secreto', { expiresIn: 86400 });
-      res.status(200).send({token});
+      res.status(200).send({token, usuario: usuario.username });
     } else {
       res.status(401).send(`Verifica tu password.`);
     }
   });
 })
+
+usuariosRoutes.post('/whoami', tokenValidate, (req, res) => {
+  // logger.info('Pedimos el usuario whoami');
+  res.json({ username: req.user.username });
+});
 
 module.exports = usuariosRoutes;

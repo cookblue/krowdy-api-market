@@ -14,7 +14,6 @@ const authJWT = require('./api/libs/auth');
 const errorHandler = require('./api/libs/errorHandler');
 const app = express();
 
-
 mongoose.connect('mongodb://127.0.0.1:27017/training', { useNewUrlParser: true });
 mongoose.connection.on('error', (error) => {
   logger.error(error);
@@ -23,8 +22,8 @@ mongoose.connection.on('error', (error) => {
 });
 
 
-app.use(bodyParser.json()); // IMPORTANTE!!!
-// stream: message => logger.info(message.trim())
+app.use(bodyParser.json());
+
 app.use(morgan('short', { 
   stream: {
     write: message => logger.info(message.trim()),
@@ -41,8 +40,6 @@ app.use(errorHandler.catchResolver);
 
 passport.use(authJWT);
 
-
-// passport.authenticate('jwt', { session: false });
 app.get('/',(request, response) => {
   logger.error('Se hizo peticion al /');
   response.send('Hello World');
@@ -51,7 +48,6 @@ app.get('/',(request, response) => {
 
 app.get('/search', (req, res) => {
   const titulo = req.query.titulo;
-  console.log(titulo);  
   const pageNo = parseInt(req.query.pageNo);
   const size = parseInt(req.query.size);
   const query = {};
@@ -66,7 +62,6 @@ app.get('/search', (req, res) => {
   query.limit = size;
   return productoController.buscarProducto(titulo,query)
     .then(products => {
-      console.log('productos', products);
       res.json(products);
     })
 });
@@ -74,14 +69,3 @@ app.get('/search', (req, res) => {
 app.listen(8080, () => {
   console.log('Init server');
 });
-
-/*
-
-passport.use(new BasicStrategy((username, password, done) => {
-  if (username.valueOf() === 'luis' && password.valueOf() === 'krowdy123') {
-    done(null, true);
-  } else {
-    done(null, false);
-  }
-}));
-*/
